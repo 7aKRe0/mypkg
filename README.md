@@ -1,3 +1,5 @@
+[![test](https://github.com/7aKRe0/mypkg/actions/workflows/test.yml/badge.svg)](https://github.com/7aKRe0/mypkg/actions/workflows/test.yml)
+
 # mypkg
 
 talker.pyでカウントした数字をlistener.pyで表示します
