@@ -1,5 +1,7 @@
 name: test
+
 on: push
+
 jobs:
   test:
     runs-on: ubuntu-22.04
@@ -7,11 +9,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: build and test
+        shell: bash  # デフォルトのシェルを bash に設定
         run: |
-          # ファイルを正しいディレクトリに配置
+          # 必要なファイルを同期
           rsync -av ./ /root/ros2_ws/src/mypkg/
-
-          # 作業ディレクトリに移動
           cd /root/ros2_ws
 
           # ROS 2 環境を設定
