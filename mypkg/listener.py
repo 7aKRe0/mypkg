@@ -1,28 +1,38 @@
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Int16
+from std_msgs.msg import String
+import os
 
 
-class listener(Node):
+class ScheduleListener(Node):
     def __init__(self):
-        super().__init__("listener")
-        self.pub = self.create_subscription(Int16,"countup",cb,10)
+        super().__init__('schedule_listener')
+        self.subscription = self.create_subscription(
+            String,
+            'schedule_topic',
+            self.listener_callback,
+            10
+        )
+        self.subscription  # prevent unused variable warning
 
-    def cb(self):
-        self.get_logger().info("Listen:%d" % msg.data)
+    def listener_callback(self, msg):
+        self.get_logger().info(f'受信したメッセージ: "{msg.data}"')
 
-def main():
-    rclpy.spin(node)
+        # 予定が現在時刻と一致する場合にGUI通知を送信
+        if "15:00" in msg.data:
+            os.system('notify-send "お菓子の時間です！"')
 
+def main(args=None):
+    rclpy.init(args=args)
+    node = ScheduleListener()
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
 
-rclpy.init()
-node = Node("listener")
-
-def cb(msg):
-    global node
-    node.get_logger().info("Listen: %d" % msg.data)
-
-def main():
-    pub = node.create_subscription(Int16, "countup", cb, 10)
-    rclpy.spin(node)
+if __name__ == '__main__':
+    main()
 

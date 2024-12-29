@@ -1,0 +1,5 @@
+string time
+string event
+---
+bool success
+
