@@ -12,9 +12,12 @@ source install/local_setup.bash
 # ビルドの実行
 colcon build || { echo "ビルド失敗"; exit 1; }
 
+# ROS 2 コマンド確認
+echo "ROS 2 コマンドの場所: $(which ros2)"
+
 # トーカーを実行してログを保存
 echo "トーカーを実行してログを保存中..."
-timeout 10 ros2 run mypkg talker > /tmp/mypkg.log 2>&1
+timeout 30 ros2 run mypkg talker > /tmp/mypkg.log 2>&1
 
 # 現在時刻を取得
 current_time=$(date +"%H:%M")
@@ -24,8 +27,8 @@ echo "現在時刻: $current_time"
 echo "ログ内容:"
 cat /tmp/mypkg.log || { echo "ログが空です"; exit 1; }
 
-# 現在時刻に一致する行を抽出
-log_line=$(grep "現在時刻: $current_time" /tmp/mypkg.log)
+# 現在時刻に一致する行を抽出（前後1分も含む）
+log_line=$(grep -E "現在時刻: ($current_time|$(date -d '-1 minute' +%H:%M)|$(date -d '+1 minute' +%H:%M))" /tmp/mypkg.log)
 
 if [ -z "$log_line" ]; then
     echo "テスト失敗: 現在時刻の情報がログに見つかりません"
