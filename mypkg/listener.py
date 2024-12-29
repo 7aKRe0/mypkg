@@ -1,8 +1,7 @@
+import os
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
-import os
-
 
 class ScheduleListener(Node):
     def __init__(self):
@@ -16,11 +15,18 @@ class ScheduleListener(Node):
         self.subscription  # prevent unused variable warning
 
     def listener_callback(self, msg):
-        self.get_logger().info(f'受信したメッセージ: "{msg.data}"')
+        self.get_logger().info(f"Received: {msg.data}")
 
-        # 予定が現在時刻と一致する場合にGUI通知を送信
-        if "15:00" in msg.data:
-            os.system('notify-send "お菓子の時間です！"')
+        # 予定がある場合だけデスクトップ通知を表示
+        if "お菓子の時間" in msg.data:
+            os.system('notify-send "ALERT" "Okashi no jikan desu!"')
+        elif "夕食の準備" in msg.data:
+            os.system('notify-send "ALERT" "Yushoku no junbi wo shite kudasai!"')
+        elif "お風呂の時間" in msg.data:
+            os.system('notify-send "ALERT" "Ofuro no jikan desu!"')
+        else:
+            # 予定がない場合はログ出力のみ
+            self.get_logger().info("No current events, no desktop notification.")
 
 def main(args=None):
     rclpy.init(args=args)

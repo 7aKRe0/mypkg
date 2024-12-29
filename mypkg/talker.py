@@ -11,7 +11,7 @@ class ScheduleTalker(Node):
         self.schedules = [
             {"time": "15:00", "event": "お菓子の時間"},
             {"time": "18:00", "event": "夕食の準備"},
-            {"time": "21:00", "event": "お風呂の時間"}
+            {"time": "21:07", "event": "お風呂の時間"}
         ]
 
     def timer_callback(self):
