@@ -5,32 +5,34 @@ dir=~
 [ "$1" != "" ] && dir="$1"
 cd $dir/ros2_ws || { echo "作業ディレクトリに移動できません"; exit 1; }
 
+# 環境設定
+source /opt/ros/foxy/setup.bash
+source install/local_setup.bash
+
 # ビルドの実行
 colcon build || { echo "ビルド失敗"; exit 1; }
 
-# 環境を再設定
-source $dir/.bashrc
-
 # トーカーを実行してログを保存
 echo "トーカーを実行してログを保存中..."
-timeout 10 ros2 run mypkg talker > /tmp/mypkg.log
+timeout 10 ros2 run mypkg talker > /tmp/mypkg.log 2>&1
 
 # 現在時刻を取得
 current_time=$(date +"%H:%M")
 echo "現在時刻: $current_time"
 
-# ログの確認
-echo "ログを確認中..."
+# ログの内容を表示
+echo "ログ内容:"
+cat /tmp/mypkg.log || { echo "ログが空です"; exit 1; }
 
-# 1. 現在時刻に一致する行を抽出
-log_line=$(grep "$current_time" /tmp/mypkg.log)
+# 現在時刻に一致する行を抽出
+log_line=$(grep "現在時刻: $current_time" /tmp/mypkg.log)
 
 if [ -z "$log_line" ]; then
     echo "テスト失敗: 現在時刻の情報がログに見つかりません"
     exit 1
 fi
 
-# 2. 予定の有無を判定
+# 出力に「予定なし」または「イベント」が含まれているか確認
 if echo "$log_line" | grep -q "予定なし"; then
     echo "テスト成功: 現在時刻に予定がないことが正しく表示されました"
     exit 0
