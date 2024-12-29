@@ -1,19 +1,21 @@
 #!/bin/bash
 
 # 作業ディレクトリの設定
-dir=~
+dir=~  # デフォルトはホームディレクトリ
 [ "$1" != "" ] && dir="$1"
 cd $dir/ros2_ws || { echo "作業ディレクトリに移動できません"; exit 1; }
 
 # 環境設定
-source /opt/ros/foxy/setup.bash
-source install/local_setup.bash
+echo "ROS 2 環境を設定中..."
+source /opt/ros/foxy/setup.bash || { echo "ROS 2 環境の設定に失敗しました"; exit 1; }
+source install/local_setup.bash || { echo "ワークスペースの設定に失敗しました"; exit 1; }
+
+# 環境変数の確認
+echo "PATH: $PATH"
+echo "COLCON_PREFIX_PATH: $COLCON_PREFIX_PATH"
 
 # ビルドの実行
 colcon build || { echo "ビルド失敗"; exit 1; }
-
-# ROS 2 コマンド確認
-echo "ROS 2 コマンドの場所: $(which ros2)"
 
 # トーカーを実行してログを保存
 echo "トーカーを実行してログを保存中..."
